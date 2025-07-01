@@ -10,6 +10,44 @@ import streamlit as st
 import requests
 from streamlit_lottie import st_lottie_spinner
 
+# --- Animated Heading and Definition ---
+st.markdown(
+    """
+<style>
+@keyframes colorPulse {
+    0% { color: #1976D2; }
+    50% { color: #64b5f6; }
+    100% { color: #1976D2; }
+}
+@keyframes fadeInOut {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+.animated-heading {
+    animation: colorPulse 2s infinite, fadeInOut 2.5s infinite;
+    font-size: 2.8em;
+    font-weight: bold;
+    margin-bottom: 0.05em;
+    margin-top: -1.2em;
+}
+.model-def {
+    color: #e3f2fd;
+    font-size: 1.35em;
+    margin-bottom: 1.2em;
+}
+.main .block-container {
+    padding-top: 0.5rem;
+}
+</style>
+<div style='text-align: center;'>
+    <div class='animated-heading'>💳 Credit Card Approval Prediction</div>
+    <div class='model-def'>Discover your credit card approval chances in seconds!</div>
+</div>
+    """,
+    unsafe_allow_html=True
+)
+
 # Load data
 train_original = pd.read_csv("dataset/train.csv")
 test_original = pd.read_csv("dataset/test.csv")
@@ -233,10 +271,6 @@ def full_pipeline(df):
     return df_pipe_prep
 
 # --- Streamlit UI ---
-st.write("""
-# Credit card approval prediction
-This app predicts if an applicant will be approved for a credit card or not. Just fill in the following information and click on the Predict button.
-""")
 
 input_gender = st.radio("Select your gender", ["Male", "Female"], index=0)
 input_age = np.negative(
