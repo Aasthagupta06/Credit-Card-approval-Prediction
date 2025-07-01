@@ -338,7 +338,7 @@ input_email = st.radio("Do you have an email?", ["Yes", "No"], index=0)
 email_dict = {"Yes": 1, "No": 0}
 email_val = email_dict.get(input_email)
 
-predict_bt = st.button("Predict")
+predict_bt = st.button("Am I Approved?")
 
 profile_to_predict = [
     0,  # ID
@@ -402,6 +402,25 @@ if predict_bt:
             st.balloons()
         elif final_pred[0] == 1:
             st.error("## Unfortunately, you have not been approved for a credit card")
+        # Show summary table after result message
+        summary = {
+            "Gender": input_gender,
+            "Age": int(abs(input_age // 365.25)),
+            "Marital Status": input_marital_status_key,
+            "Family Members": int(fam_member_count),
+            "Dwelling": input_dwelling_type_key,
+            "Income (USD)": input_income,
+            "Employment Status": input_employment_status_key,
+            "Employment Length (years)": int(abs(input_employment_length // 365.25)),
+            "Education Level": input_edu_level_key,
+            "Owns Car": input_car_ownship,
+            "Owns Property": input_prop_ownship,
+            "Work Phone": input_work_phone,
+            "Phone": input_phone,
+            "Email": input_email,
+        }
+        st.markdown('### 📝 Your Input Summary')
+        st.write(pd.DataFrame(summary.items(), columns=["Field", "Value"]))
     else:
         st.error(
             "Unable to make a prediction due to an error. Please check the logs and try again."
