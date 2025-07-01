@@ -48,6 +48,20 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# --- Sidebar: App info and credits ---
+st.sidebar.markdown("""
+# 💳 Credit Card Approval App
+
+**Instantly check your credit card approval chances!**
+
+- **Model:** Gradient Boosting Classifier
+- **Dataset:** Credit Card Fraud Detection (Kaggle)
+
+<div style='background-color:#1976D2; color:#fff; font-weight:bold; font-size:1.05em; border-radius:7px; padding:0.4em 0.7em; margin-top:1.2em; text-align:center;'>
+Made by Aastha Gupta
+</div>
+""", unsafe_allow_html=True)
+
 # Load data
 train_original = pd.read_csv("dataset/train.csv")
 test_original = pd.read_csv("dataset/test.csv")
