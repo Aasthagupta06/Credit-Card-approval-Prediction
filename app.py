@@ -9,6 +9,7 @@ import joblib
 import streamlit as st
 import requests
 from streamlit_lottie import st_lottie_spinner
+import base64
 
 # --- Animated Heading and Definition ---
 st.markdown(
@@ -47,6 +48,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+# Add a little vertical space after the heading/definition
+st.markdown("<div style='margin-bottom: 1.2em;'></div>", unsafe_allow_html=True)
 
 # --- Sidebar: Improved app info and credits ---
 st.sidebar.markdown("""
@@ -291,12 +294,7 @@ def full_pipeline(df):
     df_pipe_prep = pipeline.fit_transform(df)
     return df_pipe_prep
 
-# --- Streamlit UI ---
-
-input_gender = st.radio("Select your gender", ["Male", "Female"], index=0)
-input_age = np.negative(
-    st.slider("Select your age", value=42, min_value=18, max_value=70, step=1) * 365.25
-)
+# --- Prepare selectbox/radio options and mappings before UI ---
 marital_status_values = list(value_cnt_norm_cal(full_data, "Marital status").index)
 marital_status_key = [
     "Married",
@@ -306,9 +304,7 @@ marital_status_key = [
     "Widowed",
 ]
 marital_status_dict = dict(zip(marital_status_key, marital_status_values))
-input_marital_status_key = st.selectbox("Select your marital status", marital_status_key)
-input_marital_status_val = marital_status_dict.get(input_marital_status_key)
-fam_member_count = float(st.selectbox("Select your family member count", [1, 2, 3, 4, 5, 6]))
+
 dwelling_type_values = list(value_cnt_norm_cal(full_data, "Dwelling").index)
 dwelling_type_key = [
     "House / apartment",
@@ -319,9 +315,7 @@ dwelling_type_key = [
     "Co-op apartment",
 ]
 dwelling_type_dict = dict(zip(dwelling_type_key, dwelling_type_values))
-input_dwelling_type_key = st.selectbox("Select the type of dwelling you reside in", dwelling_type_key)
-input_dwelling_type_val = dwelling_type_dict.get(input_dwelling_type_key)
-input_income = int(st.text_input("Enter your income (in USD)", 0))
+
 employment_status_values = list(value_cnt_norm_cal(full_data, "Employment status").index)
 employment_status_key = [
     "Working",
@@ -331,11 +325,7 @@ employment_status_key = [
     "Student",
 ]
 employment_status_dict = dict(zip(employment_status_key, employment_status_values))
-input_employment_status_key = st.selectbox("Select your employment status", employment_status_key)
-input_employment_status_val = employment_status_dict.get(input_employment_status_key)
-input_employment_length = np.negative(
-    st.slider("Select your employment length", value=6, min_value=0, max_value=30, step=1) * 365.25
-)
+
 edu_level_values = list(value_cnt_norm_cal(full_data, "Education level").index)
 edu_level_key = [
     "Secondary school",
@@ -345,19 +335,115 @@ edu_level_key = [
     "Academic degree",
 ]
 edu_level_dict = dict(zip(edu_level_key, edu_level_values))
-input_edu_level_key = st.selectbox("Select your education status", edu_level_key)
-input_edu_level_val = edu_level_dict.get(input_edu_level_key)
-input_car_ownship = st.radio("Do you own a car?", ["Yes", "No"], index=0)
-input_prop_ownship = st.radio("Do you own a property?", ["Yes", "No"], index=0)
-input_work_phone = st.radio("Do you have a work phone?", ["Yes", "No"], index=0)
-work_phone_dict = {"Yes": 1, "No": 0}
-work_phone_val = work_phone_dict.get(input_work_phone)
-input_phone = st.radio("Do you have a phone?", ["Yes", "No"], index=0)
-work_dict = {"Yes": 1, "No": 0}
-phone_val = work_dict.get(input_phone)
-input_email = st.radio("Do you have an email?", ["Yes", "No"], index=0)
-email_dict = {"Yes": 1, "No": 0}
-email_val = email_dict.get(input_email)
+
+# --- Streamlit UI ---
+
+# Use two main columns with a spacer for a balanced layout
+left_col, spacer, right_col = st.columns([1, 0.1, 1])
+
+with left_col:
+    input_gender = st.radio(
+        "Select your gender",
+        ["Male", "Female"],
+        index=0,
+        help="Select your gender as per your official documents."
+    )
+    input_marital_status_key = st.selectbox(
+        "Select your marital status",
+        marital_status_key,
+        help="Choose your current marital status."
+    )
+    input_marital_status_val = marital_status_dict.get(input_marital_status_key)
+    input_dwelling_type_key = st.selectbox(
+        "Select the type of dwelling you reside in",
+        dwelling_type_key,
+        help="Type of residence you currently live in."
+    )
+    input_dwelling_type_val = dwelling_type_dict.get(input_dwelling_type_key)
+    input_employment_status_key = st.selectbox(
+        "Select your employment status",
+        employment_status_key,
+        help="Your current employment type."
+    )
+    input_employment_status_val = employment_status_dict.get(input_employment_status_key)
+    input_edu_level_key = st.selectbox(
+        "Select your education status",
+        edu_level_key,
+        help="Your highest completed education level."
+    )
+    input_edu_level_val = edu_level_dict.get(input_edu_level_key)
+    input_prop_ownship = st.radio(
+        "Do you own a property?",
+        ["Yes", "No"],
+        index=0,
+        help="Select 'Yes' if you own any property (house, land, etc.)."
+    )
+    input_email = st.radio(
+        "Do you have an email?",
+        ["Yes", "No"],
+        index=0,
+        help="Select 'Yes' if you have a personal email address."
+    )
+    email_dict = {"Yes": 1, "No": 0}
+    email_val = email_dict.get(input_email)
+
+with right_col:
+    input_age = np.negative(
+        st.slider(
+            "Select your age",
+            value=42,
+            min_value=18,
+            max_value=70,
+            step=1,
+            help="Enter your current age in years."
+        ) * 365.25
+    )
+    fam_member_count = float(
+        st.selectbox(
+            "Select your family member count",
+            [1, 2, 3, 4, 5, 6],
+            help="Total number of family members living with you."
+        )
+    )
+    input_income = int(
+        st.text_input(
+            "Enter your income (in USD)",
+            0,
+            help="Enter your monthly income in US Dollars."
+        )
+    )
+    input_employment_length = np.negative(
+        st.slider(
+            "Select your employment length",
+            value=6,
+            min_value=0,
+            max_value=30,
+            step=1,
+            help="Number of years you have been employed at your current job."
+        ) * 365.25
+    )
+    input_car_ownship = st.radio(
+        "Do you own a car?",
+        ["Yes", "No"],
+        index=0,
+        help="Select 'Yes' if you own a car."
+    )
+    input_phone = st.radio(
+        "Do you have a phone?",
+        ["Yes", "No"],
+        index=0,
+        help="Select 'Yes' if you have a personal phone."
+    )
+    work_dict = {"Yes": 1, "No": 0}
+    phone_val = work_dict.get(input_phone)
+    input_work_phone = st.radio(
+        "Do you have a work phone?",
+        ["Yes", "No"],
+        index=0,
+        help="Select 'Yes' if you have a phone provided by your employer."
+    )
+    work_phone_dict = {"Yes": 1, "No": 0}
+    work_phone_val = work_phone_dict.get(input_work_phone)
 
 predict_bt = st.button("Am I Approved?")
 
