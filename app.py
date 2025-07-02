@@ -10,6 +10,8 @@ import streamlit as st
 import requests
 from streamlit_lottie import st_lottie_spinner
 import base64
+import shap
+import matplotlib.pyplot as plt
 
 # --- Animated Heading and Definition ---
 st.markdown(
@@ -502,33 +504,138 @@ if predict_bt:
     with st_lottie_spinner(
         lottie_loading_an, quality="high", height="200px", width="200px"
     ):
-        final_pred = make_prediction()
+        try:
+            final_pred = make_prediction()
+            prediction_error = None
+        except Exception as e:
+            final_pred = None
+            prediction_error = str(e)
+
+    # Show prediction result at the top
     if final_pred is not None:
         if final_pred[0] == 0:
             st.success("## You have been approved for a credit card")
             st.balloons()
         elif final_pred[0] == 1:
             st.error("## Unfortunately, you have not been approved for a credit card")
-        # Show summary table after result message
-        summary = {
-            "Gender": input_gender,
-            "Age": int(abs(input_age // 365.25)),
-            "Marital Status": input_marital_status_key,
-            "Family Members": int(fam_member_count),
-            "Dwelling": input_dwelling_type_key,
-            "Income (USD)": input_income,
-            "Employment Status": input_employment_status_key,
-            "Employment Length (years)": int(abs(input_employment_length // 365.25)),
-            "Education Level": input_edu_level_key,
-            "Owns Car": input_car_ownship,
-            "Owns Property": input_prop_ownship,
-            "Work Phone": input_work_phone,
-            "Phone": input_phone,
-            "Email": input_email,
-        }
-        st.markdown('### 📝 Your Input Summary')
-        st.write(pd.DataFrame(summary.items(), columns=["Field", "Value"]))
     else:
         st.error(
-            "Unable to make a prediction due to an error. Please check the logs and try again."
+            f"Unable to make a prediction due to an error: {prediction_error}"
         )
+
+    # Input summary below prediction result
+    summary = {
+        "Gender": input_gender,
+        "Age": int(abs(input_age // 365.25)),
+        "Marital Status": input_marital_status_key,
+        "Family Members": int(fam_member_count),
+        "Dwelling": input_dwelling_type_key,
+        "Income (USD)": input_income,
+        "Employment Status": input_employment_status_key,
+        "Employment Length (years)": int(abs(input_employment_length // 365.25)),
+        "Education Level": input_edu_level_key,
+        "Owns Car": input_car_ownship,
+        "Owns Property": input_prop_ownship,
+        "Work Phone": input_work_phone,
+        "Phone": input_phone,
+        "Email": input_email,
+    }
+    st.markdown('### 📝 Your Input Summary')
+    st.write(pd.DataFrame(summary.items(), columns=["Field", "Value"]))
+
+    # SHAP section (always try to show)
+    try:
+        model = joblib.load('final_model/gradient_boosting_model.sav')
+        background_full = train_copy_with_profile_to_pred_prep.drop(columns=["ID", "Is high risk"])
+        background = background_full.iloc[:-1].sample(100, random_state=42)  # Exclude the last row (user input)
+        profile_row = background_full.iloc[[-1]]  # The last row is the user input
+        shap_explainer = shap.Explainer(model, background)
+        shap_values = shap_explainer(profile_row)
+
+        # Build list of features to show based on user selections
+        selected_features = []
+        # Gender
+        if input_gender == "Male":
+            selected_features.append("Gender_M")
+        else:
+            selected_features.append("Gender_F")
+        # Car ownership
+        if input_car_ownship == "Yes":
+            selected_features.append("Has a car_Y")
+        else:
+            selected_features.append("Has a car_N")
+        # Property ownership
+        if input_prop_ownship == "Yes":
+            selected_features.append("Has a property_Y")
+        else:
+            selected_features.append("Has a property_N")
+        # Work phone
+        if input_work_phone == "Yes":
+            selected_features.append("Has a work phone_Y")
+        else:
+            selected_features.append("Has a work phone_N")
+        # Phone
+        if input_phone == "Yes":
+            selected_features.append("Has a phone_Y")
+        else:
+            selected_features.append("Has a phone_N")
+        # Email
+        if input_email == "Yes":
+            selected_features.append("Has an email_Y")
+        else:
+            selected_features.append("Has an email_N")
+        # Employment status
+        for key, val in employment_status_dict.items():
+            if input_employment_status_key == key:
+                selected_features.append(f"Employment status_{val}")
+        # Marital status
+        for key, val in marital_status_dict.items():
+            if input_marital_status_key == key:
+                selected_features.append(f"Marital status_{val}")
+        # Dwelling
+        for key, val in dwelling_type_dict.items():
+            if input_dwelling_type_key == key:
+                selected_features.append(f"Dwelling_{val}")
+        # Education level
+        selected_features.append("Education level")
+        # Numeric features
+        selected_features += ["Income", "Age", "Employment length", "Family member count"]
+        # Only keep features that exist in the processed data
+        selected_features = [f for f in selected_features if f in profile_row.columns]
+        feature_indices = [profile_row.columns.get_loc(f) for f in selected_features]
+        filtered_shap_values = shap.Explanation(
+            values=shap_values.values[0][feature_indices],
+            base_values=shap_values.base_values[0],
+            data=profile_row.iloc[0][selected_features].values,
+            feature_names=selected_features
+        )
+        st.markdown("### 🔍 Model Explanation (SHAP)")
+        fig, ax = plt.subplots()
+        shap.plots.waterfall(filtered_shap_values, max_display=len(selected_features), show=False)
+        fig.patch.set_facecolor('#f4f4f4')
+        ax.set_facecolor('#f4f4f4')
+        ax.tick_params(colors='#222')
+        for spine in ax.spines.values():
+            spine.set_color('#222')
+        ax.title.set_color('#222')
+        ax.yaxis.label.set_color('#222')
+        ax.xaxis.label.set_color('#222')
+        # Make numbers and text brighter
+        for text in ax.texts:
+            text.set_color('#222')
+        st.pyplot(fig)
+        # User-friendly explanation in a lighter box with less gap
+        st.markdown('''
+            <div style="background-color:#fafbfc; border-radius:10px; padding:1.1em 1.2em 1.1em 1.2em; margin-top:0.5em; margin-bottom:1.2em; border: 1px solid #e0e0e0; color:#222;">
+            <b style="font-size:1.08em;">How to read this plot:</b>
+            <ul style="margin-top:0.5em; margin-bottom:0; padding-left:1.2em;">
+            <li>Each bar shows how much a feature (like your income or age) pushed your approval score up <b style="color:#d32f2f">(red)</b> or down <b style="color:#1976d2">(blue)</b>.</li>
+            <li>Features in <b style="color:#d32f2f">red</b> made approval more likely.</li>
+            <li>Features in <b style="color:#1976d2">blue</b> made approval less likely.</li>
+            <li>The longer the bar, the bigger the effect.</li>
+            <li>For example, if "Income" is red and long, your income helped your approval.</li>
+            </ul>
+            </div>
+        ''', unsafe_allow_html=True)
+    except Exception as e:
+        st.warning(f"SHAP explanation could not be generated: {e}")
