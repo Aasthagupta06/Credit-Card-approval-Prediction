@@ -42,6 +42,15 @@ A modern, interactive Streamlit web app to predict credit card approval chances 
 <img src="assets/roc.png" alt="ROC Curve" width="400"/>
 
 
+## 🏆 Top 3 Models (with default parameters)
+
+| Model                  | Recall score |
+|------------------------|-------------|
+| Gradient Boosting      | 90%         |
+| Adaboost               | 75%         |
+| Gaussian Naive Bayes   | 67%         |
+
+
 ### **Final Model and Evaluation Metric**
 - **The final model used is:** Gradient Boosting
 - **Metrics used:** Recall
