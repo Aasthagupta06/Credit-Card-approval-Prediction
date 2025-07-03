@@ -30,9 +30,6 @@ A modern, interactive Streamlit web app to predict credit card approval chances 
 ---
 
 
-
----
-
 ## 📊 Quick Glance at the Results
 
 ### Correlation between the features
