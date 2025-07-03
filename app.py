@@ -541,7 +541,7 @@ if predict_bt:
         "Email": input_email,
     }
     st.markdown('### 📝 Your Input Summary')
-    st.write(pd.DataFrame(summary.items(), columns=["Field", "Value"]))
+    st.write(pd.DataFrame(summary.items(), columns=["Field", "Value"]).astype(str))
 
     # SHAP section (always try to show)
     try:
