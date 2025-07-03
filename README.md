@@ -1,19 +1,74 @@
-# Credit Card Approval Prediction
+# Credit Card Approval Prediction App
 
-A machine learning web app to predict whether a credit card application will be approved, built with Streamlit. The app uses a Gradient Boosting model trained on real-world data and provides an interactive UI for users to input applicant details and get instant predictions.
+A modern, interactive Streamlit web app to predict credit card approval chances using a machine learning model trained on a Kaggle dataset. The app provides a user-friendly interface, grouped input fields, and clear model explanations with SHAP.
 
 ---
 
 ## 🚀 Features
-- Predicts credit card approval based on user input
-- Interactive Streamlit web interface
+- Clean, modern Streamlit UI with grouped and tooltipped input fields
+- Animated headings and custom CSS for a professional look
+- Sidebar with app info and credits
+- Input summary table for user review
 - Data preprocessing pipeline with outlier removal, encoding, scaling, and SMOTE balancing
 - Loads model and data locally (no cloud dependencies)
-- Ready for deployment on GitHub
+- **Model explainability with SHAP: see which features most influenced your approval prediction**
+- Ready for local use or deployment
 
 ---
 
-## 📁 Project Structure
+## 📝 How to Use
+1. Clone this repository and install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+2. Run the app:
+   ```sh
+   streamlit run app.py
+   ```
+3. Enter your details in the app UI and click "Am I Approved?" to see your prediction and explanation.
+
+---
+
+
+
+---
+
+## 📊 Quick Glance at the Results
+
+### Correlation between the features
+<img src="notebook/correlation_heatmap.png" alt="Correlation Heatmap" width="400"/>
+
+### Confusion matrix of Gradient Boosting Classifier
+<img src="notebook/confusion_matrix.png" alt="Confusion Matrix" width="400"/>
+
+### ROC curve of Gradient Boosting Classifier
+<img src="notebook/roc_curve.png" alt="ROC Curve" width="400"/>
+
+---
+
+### **Final Model and Evaluation Metric**
+- **The final model used is:** Gradient Boosting
+- **Metrics used:** Recall
+
+We chose **recall** as the primary metric for evaluating our credit risk model because our main goal is to identify as many actual defaulters as possible. In the context of credit lending, missing a defaulter (a false negative) can lead to significant financial losses for the institution. By focusing on recall, we prioritize minimizing these false negatives, ensuring that most high-risk clients are correctly flagged. While this approach may result in some good clients being incorrectly classified as risky (false positives), we consider this trade-off acceptable because the cost of lending to a defaulter is much higher than denying credit to a safe client. In summary, recall aligns with our objective to reduce the risk of undetected defaults and protect the financial institution from potential losses.
+
+---
+
+## 🔍 Model Explainability with SHAP
+
+This app uses **SHAP (SHapley Additive exPlanations)** to provide clear, visual explanations for each credit card approval prediction.
+
+- **What is SHAP?**  
+  SHAP helps you understand how each input feature (like income, age, employment status, etc.) influenced the model's decision for your specific case.
+- **How does it work in this app?**  
+  After you submit your details, the app shows a SHAP waterfall plot highlighting which features pushed your approval chances up or down.
+- **Why is this useful?**  
+  - Makes the model's decision transparent and trustworthy.
+  - Helps users see which factors are most important for their approval.
+
+---
+
+## �� Project Structure
 ```
 Credit_card_Approval/
 ├── dataset/
@@ -62,12 +117,10 @@ pip install -r requirements.txt
 
 ---
 
-## ▶️ Running the Streamlit App
-```sh
-streamlit run app.py
-```
-- The app will open in your browser at `http://localhost:8501`
-- Fill in the form and click **Predict** to see the result
+## 📢 Credits
+- Model: Gradient Boosting Classifier
+- Dataset: Credit Card Fraud Detection (Kaggle)
+- UI & App: Made by Aastha Gupta
 
 ---
 
