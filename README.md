@@ -140,4 +140,6 @@ This project demonstrates a complete machine learning workflow: from data analys
 - Model: Gradient Boosting Classifier
 - Dataset: Credit Card Fraud Detection (Kaggle)
 - UI & App: Made by Aastha Gupta
+
+  
 Thank you for checking out this project! 
