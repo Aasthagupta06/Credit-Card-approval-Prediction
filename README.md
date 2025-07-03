@@ -44,7 +44,6 @@ A modern, interactive Streamlit web app to predict credit card approval chances 
 ### ROC curve of Gradient Boosting Classifier
 <img src="assets/roc.png" alt="ROC Curve" width="400"/>
 
----
 
 ### **Final Model and Evaluation Metric**
 - **The final model used is:** Gradient Boosting
@@ -115,12 +114,7 @@ pip install -r requirements.txt
 - Place your data files in the `dataset/` folder (`train.csv`, `test.csv`, etc.)
 - Place your trained model in `final_model/gradient_boosting_model.sav`
 
----
 
-## 📢 Credits
-- Model: Gradient Boosting Classifier
-- Dataset: Credit Card Fraud Detection (Kaggle)
-- UI & App: Made by Aastha Gupta
 
 ---
 
@@ -141,4 +135,9 @@ pip install -r requirements.txt
 ## 📦 Summary
 This project demonstrates a complete machine learning workflow: from data analysis and feature engineering in Jupyter notebooks, to model training and evaluation, and finally to deployment as an interactive web app using Streamlit. All data and models are handled locally for privacy and ease of use. The app is ready for further extension or deployment as needed.
 
+---
+## 📢 Credits
+- Model: Gradient Boosting Classifier
+- Dataset: Credit Card Fraud Detection (Kaggle)
+- UI & App: Made by Aastha Gupta
 Thank you for checking out this project! 
