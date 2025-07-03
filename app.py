@@ -1,17 +1,18 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+import joblib
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler, OrdinalEncoder
 from imblearn.over_sampling import SMOTE
-import joblib
 import streamlit as st
 import requests
 from streamlit_lottie import st_lottie_spinner
 import base64
 import shap
-import matplotlib.pyplot as plt
+
 
 # --- Animated Heading and Definition ---
 st.markdown(
@@ -639,3 +640,5 @@ if predict_bt:
         ''', unsafe_allow_html=True)
     except Exception as e:
         st.warning(f"SHAP explanation could not be generated: {e}")
+
+        #final
