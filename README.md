@@ -36,13 +36,13 @@ A modern, interactive Streamlit web app to predict credit card approval chances 
 ## 📊 Quick Glance at the Results
 
 ### Correlation between the features
-<img src="notebook/correlation_heatmap.png" alt="Correlation Heatmap" width="400"/>
+<img src="assets/heatmap.png" alt="Correlation Heatmap" width="400"/>
 
 ### Confusion matrix of Gradient Boosting Classifier
-<img src="notebook/confusion_matrix.png" alt="Confusion Matrix" width="400"/>
+<img src="assets/confusion_matrix.png" alt="Confusion Matrix" width="400"/>
 
 ### ROC curve of Gradient Boosting Classifier
-<img src="notebook/roc_curve.png" alt="ROC Curve" width="400"/>
+<img src="assets/roc.png" alt="ROC Curve" width="400"/>
 
 ---
 
